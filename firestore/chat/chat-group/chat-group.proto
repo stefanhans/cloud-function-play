@@ -1,0 +1,49 @@
+syntax = 'proto3';
+
+package chatgroup;
+
+message Member {
+    string name = 1;
+    string ip = 2;
+    string port = 3;
+    string protocol = 4;
+}
+
+message MemberList {
+    repeated Member member = 1;
+}
+
+// Services are mapped by request/reply message types
+message Message {
+    enum MessageType {
+        // messages to handle subscriptions
+        SUBSCRIBE_REQUEST = 0;
+        SUBSCRIBE_REPLY = 1;
+
+        // messages to handle unsubscriptions
+        UNSUBSCRIBE_REQUEST = 2;
+        UNSUBSCRIBE_REPLY = 3;
+
+        // messages to publish chat messages to all members
+        PUBLISH_REQUEST = 4;
+        PUBLISH_REPLY = 5;
+
+        // messages to test publishing chat messages
+        TEST_PUBLISH_REQUEST = 6;
+        TEST_PUBLISH_REPLY = 7;
+
+        // messages to test chat commands
+        TEST_CMD_REQUEST = 8;
+        TEST_CMD_REPLY = 9;
+
+
+        // todo: implement TEST_PING functionality, i.e. response at each step
+
+        // messages to test a chain of message transfer in a ping like fashion
+        TEST_PING_REQUEST = 10;
+        TEST_PING_REPLY = 11;
+    }
+    MessageType msgType = 1;
+    Member  sender = 2;
+    string  text = 3;
+}

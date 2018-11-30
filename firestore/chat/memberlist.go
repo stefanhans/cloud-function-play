@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	gcp_memberlist "bitbucket.org/stefanhans/go-thesis/Libraries/memberlist"
+	gcp_memberlist "github.com/stefanhans/cloud-function-play/memberlist"
 )
 
 var (

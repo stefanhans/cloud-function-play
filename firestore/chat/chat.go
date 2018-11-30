@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	gcp_memberlist "bitbucket.org/stefanhans/go-thesis/Libraries/memberlist"
 	"github.com/stefanhans/cloud-function-play/firestore/chat/chat-group"
+	gcp_memberlist "github.com/stefanhans/cloud-function-play/memberlist"
 )
 
 // Chat is the core struct for the chat

@@ -92,7 +92,7 @@ func executeCommand(commandline string) {
 
 		case "message":
 			log.Printf("CMD_MESSAGE\n")
-			list(commandFields[1:])
+			message(commandFields[1:])
 
 		case "logfile":
 			log.Printf("CMD_LOGFILE\n")

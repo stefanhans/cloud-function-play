@@ -20,8 +20,6 @@ var (
 func commandUsageInit() {
 	cmdUsage = make(map[string]string)
 
-	cmdUsage["all"] = "\\all"
-
 	cmdUsage["chat"] = "\\chat"
 	cmdUsage["self"] = "\\self"
 	cmdUsage["list"] = "\\list"
@@ -62,16 +60,6 @@ func executeCommand(commandline string) {
 
 		// Switch according to the first word and call appropriate function with the rest as arguments
 		switch commandFields[0] {
-
-		case "all":
-			// enhancement: order deterministic
-			log.Printf("CMD_ALL\n")
-			self(commandFields[1:])
-			list(commandFields[1:])
-			message(commandFields[1:])
-			showLogfile(commandFields[1:])
-			gcpconfig(commandFields[1:])
-			gcplist(commandFields[1:])
 
 		// CHAT
 		case "chat":

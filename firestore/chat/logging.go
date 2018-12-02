@@ -26,7 +26,7 @@ func startLogging(name string) (*os.File, error) {
 	// Prepare logfile for logging
 	year, month, day := time.Now().Date()
 	hour, minute, second := time.Now().Clock()
-	logfilename = fmt.Sprintf("rudimentary-chat-tcp-%s-%v%02d%02d%02d%02d%02d.log", name,
+	logfilename = fmt.Sprintf("chat-%s-%v%02d%02d%02d%02d%02d.log", name,
 		year, int(month), int(day), int(hour), int(minute), int(second))
 
 	logfile, err := os.OpenFile(logfilename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)

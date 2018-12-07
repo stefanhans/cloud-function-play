@@ -3,7 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"sort"
 	"strings"
@@ -35,6 +37,10 @@ func commandUsageInit() {
 	cmdUsage["gcpunsubscribe"] = "\\gcpunsubscribe"
 
 	cmdUsage["types"] = "\\types"
+
+	cmdUsage["services"] = "\\services"
+	cmdUsage["service"] = "\\service"
+	cmdUsage["myip"] = "\\myip"
 
 	cmdUsage["quit"] = "\\quit"
 
@@ -117,6 +123,16 @@ func executeCommand(commandline string) {
 			log.Printf("CMD_TYPES\n")
 			types(commandFields[1:])
 
+		// SERVICES
+		case "services":
+			log.Printf("CMD_SERVICES\n")
+			services(commandFields[1:])
+
+		case "service":
+			log.Printf("CMD_SERVICE\n")
+			service(commandFields[1:])
+
+		// OTHERS
 		case "quit":
 			log.Printf("CMD_GCP_UNSUBSCRIBE\n")
 			quitChat(commandFields[1:])
@@ -302,6 +318,98 @@ func types(arguments []string) {
 	txt += "<CMD_TYPES>: TEST_CMD_REPLY =       9; \n"
 
 	displayText(txt)
+}
+
+func services(arguments []string) {
+
+	// Append arguments for distributed testing
+	last := strings.Join(arguments, " ")
+
+	resp, err := http.Get("https://europe-west1-cloud-functions-talk-22365.cloudfunctions.net/services")
+	if err != nil {
+		displayText(fmt.Sprintf("<CMD_SERVICES>: http.Get() failed: %v\n", err))
+		return
+	}
+
+	// Read the request body
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		displayText(fmt.Sprintf("<CMD_SERVICES>: ioutil.ReadAll(resp.Body) failed: %v\n", err))
+		return
+	}
+
+	var services map[string]Service
+	err = json.Unmarshal(body, &services)
+	if err != nil {
+		displayText(fmt.Sprintf("<CMD_SERVICES>: json.Unmarshal(body, &services) failed: %v\n", err))
+		return
+	}
+
+	jsonServiceList, err := json.MarshalIndent(services, "", "  ")
+	if err != nil {
+		log.Fatalf("failed to marshal gcp memberlist list: %v\n", err)
+	}
+
+	displayText(strings.Trim(fmt.Sprintf("<CMD_SERVICES_LIST>: \n%v\n%s", string(jsonServiceList), last), "\n"))
+
+	//// Append arguments for distributed testing
+	//last := strings.Join(arguments, " ")
+	//
+	//jsonGcpMemberList, err := json.MarshalIndent(gcpMemberList, "", "  ")
+	//if err != nil {
+	//	log.Fatalf("failed to marshal gcpMemberList: %v\n", err)
+	//}
+	//
+	//displayText(strings.Trim(fmt.Sprintf("<CMD_GPC_CONFIG>: \n%v\n%s", string(jsonGcpMemberList), last), "\n"))
+
+}
+
+func service(arguments []string) {
+
+	resp, err := http.Get("https://europe-west1-cloud-functions-talk-22365.cloudfunctions.net/services")
+	if err != nil {
+		displayText(fmt.Sprintf("<CMD_SERVICE>: http.Get() failed: %v\n", err))
+		return
+	}
+
+	// Read the request body
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		displayText(fmt.Sprintf("<CMD_SERVICE>: ioutil.ReadAll(resp.Body) failed: %v\n", err))
+		return
+	}
+
+	var services map[string]Service
+	err = json.Unmarshal(body, &services)
+	if err != nil {
+		displayText(fmt.Sprintf("<CMD_SERVICE>: json.Unmarshal(body, &services) failed: %v\n", err))
+		return
+	}
+
+	for _, srv := range services {
+		if srv.Name == arguments[0] {
+
+			//resp, err = http.Get(srv.Url)
+
+			//resp, err = http.PostForm(srv.Url, url.Values{"q": {"en ru hello world"}})
+
+			displayText(fmt.Sprintf("<CMD_SERVICE>: %v", strings.Join(arguments, " ")))
+			resp, err = http.Post(srv.Url, "application/x-www-form-urlencoded", strings.NewReader(strings.Join(arguments[1:], " ")))
+
+			if err != nil {
+				displayText(fmt.Sprintf("<CMD_SERVICE>: http.Get() failed: %v\n", err))
+				return
+			}
+
+			// Read the request body
+			body, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				displayText(fmt.Sprintf("<CMD_SERVICE>: ioutil.ReadAll(resp.Body) failed: %v\n", err))
+				return
+			}
+			displayText(fmt.Sprintf("<CMD_SERVICE_%s>: %v", strings.ToUpper(srv.Name), string(body)))
+		}
+	}
 }
 
 func quitChat(arguments []string) {

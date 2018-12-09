@@ -50,7 +50,7 @@ func startCommonLogging(name, uuid string) (*log.Logger, *os.File, error) {
 
 	// Prepare logfile for logging
 	year, month, day := time.Now().Date()
-	commonLogfilename = fmt.Sprintf("rudimentary-chat-tcp-%v%02d%02d.log",
+	commonLogfilename = fmt.Sprintf("chat-%v%02d%02d.log",
 		year, int(month), int(day))
 
 	logfile, err := os.OpenFile(commonLogfilename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)

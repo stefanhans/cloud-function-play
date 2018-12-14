@@ -40,7 +40,6 @@ func commandUsageInit() {
 
 	cmdUsage["services"] = "\\services"
 	cmdUsage["service"] = "\\service"
-	cmdUsage["myip"] = "\\myip"
 
 	cmdUsage["quit"] = "\\quit"
 
@@ -366,6 +365,12 @@ func services(arguments []string) {
 
 func service(arguments []string) {
 
+	if len(arguments) == 0 {
+
+		displayText(fmt.Sprintf("<CMD_SERVICE>: No service specified - use the command services to get a list of all available services\n"))
+		return
+	}
+
 	resp, err := http.Get("https://europe-west1-cloud-functions-talk-22365.cloudfunctions.net/services")
 	if err != nil {
 		displayText(fmt.Sprintf("<CMD_SERVICE>: http.Get() failed: %v\n", err))
@@ -386,12 +391,14 @@ func service(arguments []string) {
 		return
 	}
 
+	if len(services) == 0 {
+
+		displayText(fmt.Sprintf("<CMD_SERVICE>: No service registered\n"))
+		return
+	}
+
 	for _, srv := range services {
 		if srv.Name == arguments[0] {
-
-			//resp, err = http.Get(srv.Url)
-
-			//resp, err = http.PostForm(srv.Url, url.Values{"q": {"en ru hello world"}})
 
 			displayText(fmt.Sprintf("<CMD_SERVICE>: %v", strings.Join(arguments, " ")))
 			resp, err = http.Post(srv.Url, "application/x-www-form-urlencoded", strings.NewReader(strings.Join(arguments[1:], " ")))
